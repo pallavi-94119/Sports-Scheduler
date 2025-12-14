@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports Scheduler - Organize Your Game</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">
+        <span id="toast-message"></span>
+    </div>
+
+    <!-- Loading Spinner 
+    <div id="loading" class="loading-overlay hidden">
+        <div class="loading-spinner"></div>
+    </div>
+    -->
+
+    <!-- Authentication View -->
+    <div id="auth-view" class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1 class="auth-title">🏆 Sports Scheduler</h1>
+                <p class="auth-subtitle">Organize your games, join the community</p>
+            </div>
+            
+            <!-- Login Form -->
+            <form id="login-form" class="auth-form">
+                <h2>Welcome Back</h2>
+                <div class="form-group">
+                    <label for="login-email" class="form-label">Email</label>
+                    <input type="email" id="login-email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password" class="form-label">Password</label>
+                    <input type="password" id="login-password" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn--primary btn--full-width">Login</button>
+                <p class="auth-switch">Don't have an account? <a href="#" id="show-signup">Sign up</a></p>
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signup-form" class="auth-form hidden">
+                <h2>Create Account</h2>
+                <div class="form-group">
+                    <label for="signup-name" class="form-label">Full Name</label>
+                    <input type="text" id="signup-name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-email" class="form-label">Email</label>
+                    <input type="email" id="signup-email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-password" class="form-label">Password</label>
+                    <input type="password" id="signup-password" class="form-control" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="signup-role" class="form-label">Role</label>
+                    <select id="signup-role" class="form-control" required>
+                        <option value="player">Player</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn--primary btn--full-width">Create Account</button>
+                <p class="auth-switch">Already have an account? <a href="#" id="show-login">Login</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="app" class="app-container hidden">
+        <!-- Navigation Header -->
+        <header class="app-header">
+            <div class="header-brand">
+                <h1>🏆 Sports Scheduler</h1>
+            </div>
+            <div class="header-actions">
+                <span id="user-name" class="user-name"></span>
+                <button id="logout-btn" class="btn btn--outline btn--sm">Logout</button>
+            </div>
+        </header>
+
+        <div class="app-layout">
+            <!-- Sidebar Navigation -->
+            <nav class="app-sidebar">
+                <ul class="nav-menu">
+                    <li><a href="#" class="nav-link active" data-view="dashboard">📊 Dashboard</a></li>
+                    <li id="sports-nav" class="hidden"><a href="#" class="nav-link" data-view="sports">⚽ Manage Sports</a></li>
+                    <li><a href="#" class="nav-link" data-view="sessions">🎯 Browse Sessions</a></li>
+                    <li><a href="#" class="nav-link" data-view="create-session">➕ Create Session</a></li>
+                    <li><a href="#" class="nav-link" data-view="my-sessions">📋 My Sessions</a></li>
+                    <li id="reports-nav" class="hidden"><a href="#" class="nav-link" data-view="reports">📈 Reports</a></li>
+                    <li><a href="#" class="nav-link" data-view="profile">👤 Profile</a></li>
+                </ul>
+            </nav>
+
+            <!-- Main Content Area -->
+            <main class="app-content">
+                <!-- Dashboard View -->
+                <div id="dashboard-view" class="content-view">
+                    <div class="view-header">
+                        <h2>Dashboard</h2>
+                        <p id="dashboard-subtitle" class="view-subtitle">Welcome to your sports hub</p>
+                    </div>
+                    <div id="dashboard-stats" class="stats-grid"></div>
+                    <div id="dashboard-content" class="dashboard-content"></div>
+                </div>
+
+                <!-- Sports Management View (Admin Only) -->
+                <div id="sports-view" class="content-view hidden">
+                    <div class="view-header">
+                        <h2>Manage Sports</h2>
+                        <button id="add-sport-btn" class="btn btn--primary">Add New Sport</button>
+                    </div>
+                    <div id="sports-list" class="items-grid"></div>
+                </div>
+
+                <!-- Browse Sessions View -->
+                <div id="sessions-view" class="content-view hidden">
+                    <div class="view-header">
+                        <h2>Browse Sessions</h2>
+                        <div class="view-filters">
+                            <select id="sport-filter" class="form-control">
+                                <option value="">All Sports</option>
+                            </select>
+                            <input type="date" id="date-filter" class="form-control">
+                        </div>
+                    </div>
+                    <div id="sessions-list" class="items-grid"></div>
+                </div>
+
+                <!-- Create Session View -->
+                <div id="create-session-view" class="content-view hidden">
+                    <div class="view-header">
+                        <h2>Create New Session</h2>
+                    </div>
+                    <form id="create-session-form" class="session-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="session-sport" class="form-label">Sport</label>
+                                <select id="session-sport" class="form-control" required>
+                                    <option value="">Select a sport</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="session-date" class="form-label">Date</label>
+                                <input type="date" id="session-date" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="session-time" class="form-label">Time</label>
+                                <input type="time" id="session-time" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="session-venue" class="form-label">Venue</label>
+                                <input type="text" id="session-venue" class="form-control" required>
+                            </div>
+                        </div>
+                        
+                        <div class="teams-section">
+                            <h3>Team Setup</h3>
+                            <div class="teams-grid">
+                                <div class="team-section">
+                                    <h4>Team A</h4>
+                                    <div id="team-a-players" class="team-players">
+                                        <input type="text" class="form-control player-input" placeholder="Player name">
+                                    </div>
+                                    <button type="button" class="btn btn--outline btn--sm" onclick="addPlayer('team-a')">Add Player</button>
+                                </div>
+                                <div class="team-section">
+                                    <h4>Team B</h4>
+                                    <div id="team-b-players" class="team-players">
+                                        <input type="text" class="form-control player-input" placeholder="Player name">
+                                    </div>
+                                    <button type="button" class="btn btn--outline btn--sm" onclick="addPlayer('team-b')">Add Player</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="additional-players" class="form-label">Additional Players Needed</label>
+                            <input type="number" id="additional-players" class="form-control" min="0" required>
+                        </div>
+
+                        <button type="submit" class="btn btn--primary">Create Session</button>
+                    </form>
+                </div>
+
+                <!-- My Sessions View -->
+                <div id="my-sessions-view" class="content-view hidden">
+                    <div class="view-header">
+                        <h2>My Sessions</h2>
+                    </div>
+                    <div id="my-sessions-list" class="items-grid"></div>
+                </div>
+
+                <!-- Reports View (Admin Only) -->
+                <div id="reports-view" class="content-view hidden">
+                    <div class="view-header">
+                        <h2>Reports & Analytics</h2>
+                    </div>
+                    <div id="reports-content" class="reports-content">
+                        <div class="reports-filters">
+                            <div class="form-group">
+                                <label class="form-label">Date Range</label>
+                                <div class="date-range">
+                                    <input type="date" id="report-start-date" class="form-control">
+                                    <input type="date" id="report-end-date" class="form-control">
+                                </div>
+                            </div>
+                            <button id="generate-report-btn" class="btn btn--primary">Generate Report</button>
+                        </div>
+                        <div id="report-results" class="report-results"></div>
+                    </div>
+                </div>
+
+                <!-- Profile View -->
+                <div id="profile-view" class="content-view hidden">
+                    <div class="view-header">
+                        <h2>Profile Settings</h2>
+                    </div>
+                    <div class="profile-content">
+                        <div class="profile-section">
+                            <h3>Account Information</h3>
+                            <div id="profile-info" class="profile-info"></div>
+                        </div>
+                        <div class="profile-section">
+                            <h3>Change Password</h3>
+                            <form id="change-password-form" class="password-form">
+                                <div class="form-group">
+                                    <label for="current-password" class="form-label">Current Password</label>
+                                    <input type="password" id="current-password" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="new-password" class="form-label">New Password</label>
+                                    <input type="password" id="new-password" class="form-control" required minlength="6">
+                                </div>
+                                <div class="form-group">
+                                    <label for="confirm-password" class="form-label">Confirm Password</label>
+                                    <input type="password" id="confirm-password" class="form-control" required>
+                                </div>
+                                <button type="submit" class="btn btn--primary">Update Password</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modals - All hidden by default -->
+    <div id="sport-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Sport</h3>
+                <button type="button" class="modal-close" data-modal="sport-modal">&times;</button>
+            </div>
+            <form id="sport-form" class="modal-form">
+                <div class="form-group">
+                    <label for="sport-name" class="form-label">Sport Name</label>
+                    <input type="text" id="sport-name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="sport-description" class="form-label">Description (Optional)</label>
+                    <textarea id="sport-description" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn--outline" data-action="close-modal" data-modal="sport-modal">Cancel</button>
+                    <button type="submit" class="btn btn--primary">Create Sport</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="cancel-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Cancel Session</h3>
+                <button type="button" class="modal-close" data-modal="cancel-modal">&times;</button>
+            </div>
+            <form id="cancel-form" class="modal-form">
+                <div class="form-group">
+                    <label for="cancel-reason" class="form-label">Cancellation Reason</label>
+                    <textarea id="cancel-reason" class="form-control" rows="3" required placeholder="Please provide a reason for cancellation..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn--outline" data-action="close-modal" data-modal="cancel-modal">Keep Session</button>
+                    <button type="submit" class="btn btn--primary">Cancel Session</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
